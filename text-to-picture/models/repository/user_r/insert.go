@@ -4,8 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gocode/backend/backend/text-to-picture/models/image"
-	"gocode/backend/backend/text-to-picture/models/user"
-	"reflect"
+	 models "gocode/backend/backend/text-to-picture/models/user"
 	"regexp"
 
 	"gorm.io/gorm"
@@ -19,7 +18,7 @@ func isValidEmail(email string) bool {
 }
 
 // 向用户登录表插入数据
-func InsertUserLogin(db *gorm.DB, user *user.UserLogin) error {
+func InsertUserLogin(db *gorm.DB, user *models.UserLogin) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
 	}
@@ -35,11 +34,7 @@ func InsertUserLogin(db *gorm.DB, user *user.UserLogin) error {
 	if isValidEmail(user.Email) == false {
 		return fmt.Errorf("邮箱格式不正确")
 	}
-
-	//我这里直接写var existingUserLogin user.Login显示没有这个类型，但是上面参数又可以直接用
-	//使用reflect得到类型，然后创建一个实例
-	usertype := reflect.TypeOf(user)
-	existingUserLogin := reflect.New(usertype).Elem().Interface()
+	var existingUserLogin models.UserLogin
 
 	result := db.Where("UserName = ?", user.UserName).First(&existingUserLogin)
 	if result.Error == nil {
